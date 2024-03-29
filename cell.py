@@ -15,10 +15,10 @@ class Cell(object):
         self.row = row
         self.col = col
         self.visited = False
-        self.active = False
+        self.active = False  # 해당 cell이 활성 상태인지 체크
         self.is_entry_exit = None
         self.walls = {"top": True, "right": True, "bottom": True, "left": True}
-        self.neighbours = list()
+        self.neighbours = list()  # 단순 좌표 튜플 형태로 리스트에 저장
 
     def is_walls_between(self, neighbour): # 이웃 셀과 자신 사이에 wall이 존재하는지 판단
         """Function that checks if there are walls between self and a neighbour cell.

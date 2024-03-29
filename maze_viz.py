@@ -25,9 +25,9 @@ class Visualizer(object):
         self.cell_size = cell_size
         self.height = maze.num_rows * cell_size
         self.width = maze.num_cols * cell_size
-        self.ax = None # 여기에 axes 인스턴스 저장
-        self.lines = dict() # 미로의 벽을 나타내는 선들의 집합
-        self.squares = dict() # 미로의 각 셀들의 집합
+        self.ax = None  # 여기에 axes 인스턴스 저장
+        self.lines = dict()  # 미로의 벽을 나타내는 선들의 집합 (딕셔너리 자료구조 이용)
+        self.squares = dict()  # 미로의 각 셀들의 집합 (딕셔너리 자료구조 이용)
         self.media_filename = media_filename
 
     def set_media_filename(self, filename):

@@ -8,10 +8,10 @@ algorithm_list = ["dfs_backtrack", "bin_tree"]
 
 def depth_first_recursive_backtracker( maze, start_coor ):
         k_curr, l_curr = start_coor             # Where to start generating
-        path = [(k_curr, l_curr)]               # To track path of solution
+        path = [(k_curr, l_curr)]               # To track path of solution (단순 좌표 튜플 형태로 저장)
         maze.grid[k_curr][l_curr].visited = True     # Set initial cell to visited
         visit_counter = 1                       # To count number of visited cells
-        visited_cells = list()                  # Stack of visited cells for backtracking
+        visited_cells = list()                  # Stack of visited cells for backtracking (단순 좌표 튜플 형태로 저장)
 
         print("\nGenerating the maze with depth-first search...")
         time_start = time.time()

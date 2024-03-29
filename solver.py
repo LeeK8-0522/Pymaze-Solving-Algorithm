@@ -186,8 +186,8 @@ class DepthFirstBacktracker(Solver):
         logging.debug("Class DepthFirstBacktracker solve called")
         k_curr, l_curr = self.maze.entry_coor      # Where to start searching
         self.maze.grid[k_curr][l_curr].visited = True     # Set initial cell to visited
-        visited_cells = list()                  # Stack of visited cells for backtracking
-        path = list()                           # To track path of solution and backtracking cells
+        visited_cells = list()                  # Stack of visited cells for backtracking (단순 좌표 튜플 형태로 저장)
+        path = list()                           # To track path of solution and backtracking cells. ((좌표 튜플), 활성 여부) 이중 튜플 형태로 저장.
         if not self.quiet_mode:
             print("\nSolving the maze with depth-first search...")
 

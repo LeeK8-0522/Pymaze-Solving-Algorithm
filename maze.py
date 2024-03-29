@@ -35,14 +35,15 @@ class Maze(object):
         self.num_cols = num_cols # 미로의 열의 개수
         self.num_rows = num_rows # 미로의 행의 개수
         self.id = id # 미로의 id (고유 식별자)
-        self.grid_size = num_rows*num_cols # 미로의 사이즈 (넓이)
-        self.entry_coor = self._pick_random_entry_exit(None) # 미로의 입구 좌표
-        self.exit_coor = self._pick_random_entry_exit(self.entry_coor) # 미로의 출구 좌표
-        self.generation_path = [] # 미로 생성시 셀 방문 순서 저장
-        self.solution_path = None # 미로 solution 경로 저장
-        self.initial_grid = self.generate_grid() # 2차원 cell
+        self.grid_size = num_rows*num_cols  # 미로의 사이즈 (넓이)
+        self.entry_coor = self._pick_random_entry_exit(None)  # 미로의 입구 좌표 (단순 좌표 튜플 형태)
+        self.exit_coor = self._pick_random_entry_exit(self.entry_coor)  # 미로의 출구 좌표 (단순 좌표 튜플 형태)
+        self.generation_path = []  # 미로 생성시 셀 방문 순서 저장 (단순 좌표 튜플 형태로 리스트에 저장)
+        self.solution_path = None  # 미로 solution 경로 저장. ((좌표), 활성 여부) 이중 튜플 형태로 리스트에 저장.
+        self.initial_grid = self.generate_grid()  # 2차원 cell (자료형: Cell)
         self.grid = self.initial_grid
-        self.generate_maze(algorithm, (0, 0)) # 미로 생성
+        self.generate_maze(algorithm, (0, 0))  # 미로 생성
+        self.solution_cost = None  # 미로 해결 경로의 cost를 저장.
 
     def generate_grid(self): # 2차원 cell 생성 (어떠한 필터링도 X)
         """Function that creates a 2D grid of Cell objects. This can be thought of as a
@@ -115,7 +116,7 @@ class Maze(object):
         else:
             return None
 
-    def validate_neighbours_solve(self, neighbour_indices, k, l, k_end, l_end, method = "fancy"): # 이웃 셀들 중에서 wall의 존재 여부를 기준으로 필터링
+    def validate_neighbours_solve(self, neighbour_indices, k, l, k_end, l_end, method = "fancy"):  # 이웃 셀들 중에서 wall의 존재 여부를 기준으로 필터링
         """Function that validates whether a neighbour is unvisited or not and discards the
         neighbours that are inaccessible due to walls between them and the current cell. The
         function implements two methods for choosing next cell; one is 'brute-force' where one
@@ -159,7 +160,7 @@ class Maze(object):
         else:
             return None
 
-    def _pick_random_entry_exit(self, used_entry_exit=None): # 출구 위치 임의로 선정
+    def _pick_random_entry_exit(self, used_entry_exit=None):  # 출구 위치 임의로 선정
         """Function that picks random coordinates along the maze boundary to represent either
         the entry or exit point of the maze. Makes sure they are not at the same place.
 

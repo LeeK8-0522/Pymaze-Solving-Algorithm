@@ -131,9 +131,9 @@ class MazeManager(object):
             solver = BreadthFirst(maze, neighbor_method, self.quiet_mode)
             maze.solution_path = solver.solve()
         elif method == "A-Star":
-            maze.solution_path = a_star_search(maze, manhattan_distance)
+            maze.solution_path, maze.solution_cost = a_star_search(maze, manhattan_distance)
         else:
-            maze.solution_path = uniform_cost_search(maze)
+            maze.solution_path, maze.solution_cost = uniform_cost_search(maze)
 
     def show_maze(self, id, cell_size=1):
         """Just show the generation animation and maze"""
@@ -191,14 +191,13 @@ def manhattan_distance(coord1, coord2):  # 두 좌표 사이의 맨허튼 거리
      return 0.9 * abs(coord1[0] - coord2[0]) + 1.1 * abs(coord1[1] - coord2[1])
 
 def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 최적해 구하기
-    #logging.debug("A-Star Search algorithm called")
     start = maze.entry_coor
     goal = maze.exit_coor
     maze.grid[start[0]][start[1]].visited = True  # start 노드 방문 표시
     priority_queue = []  # 우선순위 큐 선언 (for f의 최솟값 찾기)
-    heapq.heappush(priority_queue, (0 + heuristic_function(start, goal), start))  # (f, coord) 형태로 우선순위에 저장
-    parent = {}  # 경로 역추적용
-    cost = {start: 0.0} # start로부터 실제로 든 비용 (so far)
+    heapq.heappush(priority_queue, (0 + heuristic_function(start, goal), start))  # (f, coord) 튜플 형태로 우선순위에 저장
+    parent = {}  # 경로 역추적용. 딕셔너리 자료형을 이용하여 '[a] -> b' 형태로 저장.
+    cost = {start: 0.0}  # start로부터 실제로 든 비용 (so far). 딕셔너리 자료형을 이용하여 '[a] -> cost' 형태로 저장.
     step = 0  # 최적 해를 구하기 위해 수행한 연산 단계의 수
 
     print("\nSolving the maze with a-star search...")
@@ -216,15 +215,14 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
         if curr == goal:  # 만약, goal에 도착했다면,
             path = []  # for solution path 저장
             while curr in parent:  # 경로 역추적
-                path.append(curr)
+                path.append((curr, False))
                 curr = parent[curr]  # 해당 노드의 부모 노드를 참조함으로써 역추적
-            path.append(start)
+            path.append((start, False))
             path.reverse()
 
             print("optimal total cost: {:.4f}".format(cost[goal]))
             print("Number of moves performed: {}".format(step))
             print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
-            #logging.debug('A-Start Search algorithm leaving solve')
 
             return path, cost[goal]  # 최적 해와 비용 return
 
@@ -244,7 +242,6 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
     return None, -1  # 만약 해가 존재하지 않다면,
 
 def uniform_cost_search(maze):  # ucs 알고리즘으로 최적해 구하기
-    #logging.debug("A-Star Search algorithm called")
     start = maze.entry_coor
     goal = maze.exit_coor
     maze.grid[start[0]][start[1]].visited = True  # start 노드 방문 표시
@@ -269,15 +266,14 @@ def uniform_cost_search(maze):  # ucs 알고리즘으로 최적해 구하기
         if curr == goal:  # 만약, goal에 도착했다면,
             path = []  # for solution path 저장
             while curr in parent:  # 경로 역추적
-                path.append(curr)
+                path.append((curr, False))
                 curr = parent[curr]  # 해당 노드의 부모 노드를 참조함으로써 역추적
-            path.append(start)
+            path.append((start, False))
             path.reverse()
 
             print("optimal total cost: {:.4f}".format(cost[goal]))
             print("Number of moves performed: {}".format(step))
             print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
-            #logging.debug('A-Start Search algorithm leaving solve')
 
             return path, cost[goal]  # 최적 해와 비용 return
 
