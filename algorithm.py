@@ -167,38 +167,3 @@ def binary_tree( maze, start_coor ):
     print(f"Generating path for maze took {time.time() - begin_time}s.")
     maze.generation_path = path
 
-
-    # newly implemented for PA
-    def a_star_search(maze, heuristic_function):
-        start = maze.entry_coor
-        goal = maze.exit_coor
-
-        priority_queue = []  # 방문이 스케줄링된 노드들을 저장하는 우선순위 큐
-        heapq.heappush(priority_queue, (0, 0 + heuristic_function(start, goal), start))  # 우선순위 큐에 (g, h, coord) 형태로 push
-        history = {}
-        g = {start: 0}  # 딕셔너리를 통해 노드와 g값 매칭 (f값은 맨허튼 거리를 통해서 구함)
-
-        while priority_queue:
-            f_curr, g_curr, coord = heapq.heappop(priority_queue)  # 우선순위 큐에서 pop
-
-            if coord == goal:
-                path = []
-                while coord in history:
-                    path.append(coord)
-                    current = came_from[current]
-                path.append(start)  # optional, if you want start node to be included
-                path.reverse()  # optional, if you want the path from start to goal
-                return path, current_g  # Return the optimal path and its cost
-
-            neighbors = self.maze.find_neighbours(current[0], current[1])
-            for neighbor in neighbors:
-                neighbor_pos = (neighbor[0], neighbor[1])
-                tentative_g_score = g_score[current] + (1.1 if neighbor[0] != current[0] else 0.9)
-
-                if neighbor_pos not in g_score or tentative_g_score < g_score[neighbor_pos]:
-                    came_from[neighbor_pos] = current
-                    g_score[neighbor_pos] = tentative_g_score
-                    f_score = tentative_g_score + self.manhattan_distance(neighbor_pos, goal)
-                    heapq.heappush(open_set, (f_score, tentative_g_score, neighbor_pos))
-
-        return None, float("inf")  # if there is no path
