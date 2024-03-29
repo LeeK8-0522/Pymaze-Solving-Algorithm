@@ -5,6 +5,7 @@ import time
 from src.cell import Cell
 from src.algorithm import depth_first_recursive_backtracker, binary_tree
 
+random.seed(1)
 
 class Maze(object):
     """Class representing a maze; a 2D grid of Cell objects. Contains functions
@@ -175,6 +176,7 @@ class Maze(object):
 
         # Try until unused location along boundary is found.
         while rng_entry_exit == used_entry_exit:
+
             rng_side = random.randint(0, 3)
 
             if (rng_side == 0):     # Top side

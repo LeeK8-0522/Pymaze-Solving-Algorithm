@@ -115,14 +115,23 @@ class Visualizer(object):
                                       (self.maze.solution_path[0][0][0] + 0.5)*self.cell_size), 0.2*self.cell_size,
                                      fc=(0, circle_num/(len(self.maze.solution_path) - 2*len(list_of_backtrackers)),
                                          0), alpha=0.4))
-
+        """
         for i in range(1, self.maze.solution_path.__len__()):
             if self.maze.solution_path[i][0] not in list_of_backtrackers and\
                     self.maze.solution_path[i-1][0] not in list_of_backtrackers:
                 circle_num += 1
                 self.ax.add_patch(plt.Circle(((self.maze.solution_path[i][0][1] + 0.5)*self.cell_size,
                     (self.maze.solution_path[i][0][0] + 0.5)*self.cell_size), 0.2*self.cell_size,
-                    fc = (0, circle_num/(len(self.maze.solution_path) - 2*len(list_of_backtrackers)), 0), alpha = 0.4))  # backtracking한 셀이 아니라면 patch(여기서는 Circle) 인스턴스 추가. 이때 색상을 동적으로 변화시킴.
+                    fc = (0, 1 - 1/circle_num, 0), alpha = 0.4))  # backtracking한 셀이 아니라면 patch(여기서는 Circle) 인스턴스 추가. 이때 색상을 동적으로 변화시킴.
+        """
+
+        for i in range(1, self.maze.optimal_solution_path.__len__()):
+            circle_num += 1
+            self.ax.add_patch(plt.Circle(((self.maze.solution_path[i][0][1] + 0.5) * self.cell_size,
+                                          (self.maze.solution_path[i][0][0] + 0.5) * self.cell_size),
+                                         0.2 * self.cell_size,
+                                         fc=(0, 1 - 1 / circle_num, 0),
+                                         alpha=0.4))  # backtracking한 셀이 아니라면 patch(여기서는 Circle) 인스턴스 추가. 이때 색상을 동적으로 변화시킴.
 
         # Display the plot to the user
         plt.show()

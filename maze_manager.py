@@ -284,7 +284,7 @@ def uniform_cost_search(maze):  # ucs 알고리즘으로 최적해 구하기
                     path.append((curr, True))  # 만약 해당 셀이 최적 해에 포함되어 있지 않다면 활성상태 True로 설정.
 
             print("optimal total cost: {:.4f}".format(cost[goal]))
-            print("Number of moves performed: {}".format(path))
+            print("Number of moves performed: {}".format(len(path)))
             print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
 
             return path, cost[goal]  # 최적 해와 비용 return

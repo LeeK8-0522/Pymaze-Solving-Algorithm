@@ -3,6 +3,8 @@ import time
 import random
 import math
 
+random.seed(0)
+
 # global variable to store list of all available algorithms
 algorithm_list = ["dfs_backtrack", "bin_tree"]
 
