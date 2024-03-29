@@ -196,9 +196,10 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
     maze.grid[start[0]][start[1]].visited = True  # start 노드 방문 표시
     priority_queue = []  # 우선순위 큐 선언 (for f의 최솟값 찾기)
     heapq.heappush(priority_queue, (0 + heuristic_function(start, goal), start))  # (f, coord) 튜플 형태로 우선순위에 저장
-    parent = {}  # 경로 역추적용. 딕셔너리 자료형을 이용하여 '[a] -> b' 형태로 저장.
-    cost = {start: 0.0}  # start로부터 실제로 든 비용 (so far). 딕셔너리 자료형을 이용하여 '[a] -> cost' 형태로 저장.
-    step = 0  # 최적 해를 구하기 위해 수행한 연산 단계의 수
+    parent = {}  # 최적 해 경로 역추적용. 딕셔너리 자료형을 이용하여 '[a] -> b' 형태로 저장.
+    cost = {start: 0.0}  # start로부터 실제로 든 비용(g 값) (so far). 딕셔너리 자료형을 이용하여 '[a] -> cost' 형태로 저장.
+    visited_cells = []  # 방문한 노드들을 모두 저장.
+    path = []  # 방문한 노드들을 저장하되, 최적 해에 포함되지 않는 cell은 True로 설정.
 
     print("\nSolving the maze with a-star search...")
     time_start = time.time()  # 걸린 시간 check!
@@ -208,20 +209,25 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
         cost[b] = tentative_cost
 
     while len(priority_queue) != 0:
-        step += 1
         f_curr, curr = heapq.heappop(priority_queue)  # 우선순위 큐에서 pop
         maze.grid[curr[0]][curr[1]].visited = True  # 방문 표시
+        visited_cells.append(curr)  # 방문 기록에 추가
 
         if curr == goal:  # 만약, goal에 도착했다면,
-            path = []  # for solution path 저장
-            while curr in parent:  # 경로 역추적
-                path.append((curr, False))
+            while curr in parent:  # 최적 해 경로 역추적
+                maze.optimal_solution_path.append(curr)
                 curr = parent[curr]  # 해당 노드의 부모 노드를 참조함으로써 역추적
-            path.append((start, False))
-            path.reverse()
+            maze.optimal_solution_path.append(start)
+            maze.optimal_solution_path.reverse()
+
+            for curr in visited_cells:  # 방문 cell들 필터링 작업.
+                if curr in maze.optimal_solution_path:
+                    path.append((curr, False))  # 만약 해당 셀이 최적 해에 포함되어 있다면 활성상태 False로 설정.
+                else:
+                    path.append((curr, True))  # 만약 해당 셀이 최적 해에 포함되어 있지 않다면 활성상태 True로 설정.
 
             print("optimal total cost: {:.4f}".format(cost[goal]))
-            print("Number of moves performed: {}".format(step))
+            print("Number of moves performed: {}".format(len(path)))
             print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
 
             return path, cost[goal]  # 최적 해와 비용 return
@@ -233,11 +239,11 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
 
         if neighbours is not None:  # 만약, 추가적으로 탐색 가능한 셀들이 없다면 동작 무시
             for neighbour in neighbours:
-                temp_cost = cost[curr] + heuristic_function(neighbour,
+                temp_cost = cost[curr] + manhattan_distance(neighbour,
                                                             curr)  # 주의!) 여기서 heuristic 값을 구하는 것은 아니지만 동일한 효과를 낼 수 있기에 맨허튼 거리 함수 사용
                 if neighbour not in cost or temp_cost < cost[neighbour]:  # 잠정적 cost가 더 작은 경우에만 연산을 수행하기에 업데이트가 안 된 old data는 자동적으로 무시됨.
                     relaxation(curr, neighbour, temp_cost)  # relaxation 연산
-                    heapq.heappush(priority_queue,(temp_cost + heuristic_function(neighbour, goal), neighbour))  # 우선순위 큐에 push
+                    heapq.heappush(priority_queue, (temp_cost + heuristic_function(neighbour, goal), neighbour))  # 우선순위 큐에 push
 
     return None, -1  # 만약 해가 존재하지 않다면,
 
@@ -249,7 +255,8 @@ def uniform_cost_search(maze):  # ucs 알고리즘으로 최적해 구하기
     heapq.heappush(priority_queue, (0, start))  # (g, coord) 형태로 우선순위에 저장
     parent = {}  # 경로 역추적용
     cost = {start: 0.0} # start로부터 실제로 든 비용 (so far)
-    step = 0  # 최적 해를 구하기 위해 수행한 연산 단계의 수
+    visited_cells = []  # 방문한 노드들을 모두 저장.
+    path = []  # 방문한 노드들을 저장하되, 최적 해에 포함되지 않는 cell은 True로 설정.
 
     print("\nSolving the maze with uniform cost search...")
     time_start = time.time()  # 걸린 시간 check!
@@ -259,20 +266,25 @@ def uniform_cost_search(maze):  # ucs 알고리즘으로 최적해 구하기
         cost[b] = tentative_cost
 
     while len(priority_queue) != 0:
-        step += 1
         f_curr, curr = heapq.heappop(priority_queue)  # 우선순위 큐에서 pop
         maze.grid[curr[0]][curr[1]].visited = True  # 방문 표시
+        visited_cells.append(curr)  # 방문 기록에 추가
 
         if curr == goal:  # 만약, goal에 도착했다면,
-            path = []  # for solution path 저장
-            while curr in parent:  # 경로 역추적
-                path.append((curr, False))
+            while curr in parent:  # 최적 해 경로 역추적
+                maze.optimal_solution_path.append(curr)
                 curr = parent[curr]  # 해당 노드의 부모 노드를 참조함으로써 역추적
-            path.append((start, False))
-            path.reverse()
+            maze.optimal_solution_path.append(start)
+            maze.optimal_solution_path.reverse()
+
+            for curr in visited_cells:  # 방문 cell들 필터링 작업.
+                if curr in maze.optimal_solution_path:
+                    path.append((curr, False))  # 만약 해당 셀이 최적 해에 포함되어 있다면 활성상태 False로 설정.
+                else:
+                    path.append((curr, True))  # 만약 해당 셀이 최적 해에 포함되어 있지 않다면 활성상태 True로 설정.
 
             print("optimal total cost: {:.4f}".format(cost[goal]))
-            print("Number of moves performed: {}".format(step))
+            print("Number of moves performed: {}".format(path))
             print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
 
             return path, cost[goal]  # 최적 해와 비용 return

@@ -44,6 +44,7 @@ class Maze(object):
         self.grid = self.initial_grid
         self.generate_maze(algorithm, (0, 0))  # 미로 생성
         self.solution_cost = None  # 미로 해결 경로의 cost를 저장.
+        self.optimal_solution_path = []  # 미로의 최적 해 (리스트 자료구조 이용)
 
     def generate_grid(self): # 2차원 cell 생성 (어떠한 필터링도 X)
         """Function that creates a 2D grid of Cell objects. This can be thought of as a
