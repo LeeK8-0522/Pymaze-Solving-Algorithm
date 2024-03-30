@@ -130,11 +130,11 @@ class MazeManager(object):
         elif method == "BreadthFirst":
             solver = BreadthFirst(maze, neighbor_method, self.quiet_mode)
             maze.solution_path = solver.solve()
-        elif method == "A-Star":
-            maze.solution_path, maze.solution_cost = a_star_search(maze, manhattan_distance)
+        elif method == "A-Star":  # for a * search algorithm
+            maze.optimal_solution_path, maze.solution_cost = a_star_search(maze, manhattan_distance)
         elif method == "A-Star special version":  # calculate a * search algorithm with more accurate heuristic function
-            maze.solution_path, maze.solution_cost = a_star_search(maze, manhattan_distance_special_ver)
-        else:
+            maze.optimal_solution_path, maze.solution_cost = a_star_search(maze, manhattan_distance_special_ver)
+        else:  # for uniform cost search algorithm
             maze.solution_path, maze.solution_cost = uniform_cost_search(maze)
 
     def show_maze(self, id, cell_size=1):
@@ -207,7 +207,8 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
     parent = {}  # 최적 해 경로 역추적용. 딕셔너리 자료형을 이용하여 '[a] -> b' 형태로 저장.
     cost = {start: 0.0}  # start로부터 실제로 든 비용(g 값) (so far). 딕셔너리 자료형을 이용하여 '[a] -> cost' 형태로 저장.
     visited_cells = []  # 방문한 노드들을 모두 저장.
-    path = []  # 방문한 노드들을 저장하되, 최적 해에 포함되지 않는 cell은 True로 설정.
+
+    maze.solution_path = []  # 미로 해결 경로 초기화
 
     print("\nSolving the maze with a-star search...")
     time_start = time.time()  # 걸린 시간 check!
@@ -232,15 +233,15 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
 
             for curr in visited_cells:  # 방문 cell들 필터링 작업.
                 if curr in maze.optimal_solution_path:
-                    path.append((curr, False))  # 만약 해당 셀이 최적 해에 포함되어 있다면 활성상태 False로 설정.
+                    maze.solution_path.append((curr, False))  # 만약 해당 셀이 최적 해에 포함되어 있다면 활성상태 False로 설정.
                 else:
-                    path.append((curr, True))  # 만약 해당 셀이 최적 해에 포함되어 있지 않다면 활성상태 True로 설정.
+                    maze.solution_path.append((curr, True))  # 만약 해당 셀이 최적 해에 포함되어 있지 않다면 활성상태 True로 설정.
 
             print("optimal total cost: {:.4f}".format(cost[goal]))
-            print("Number of moves performed: {}".format(len(path)))
+            print("Number of moves performed: {}".format(len(maze.solution_path)))
             print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
 
-            return path, cost[goal]  # 최적 해와 비용 return
+            return maze.optimal_solution_path, cost[goal]  # 최적 해와 비용 return
 
         neighbours = maze.find_neighbours(curr[0], curr[1])  # 현재 위치에서 이웃 찾기
         neighbours = maze._validate_neighbours_generate(neighbours)  # 이웃 셀 필터링 1
