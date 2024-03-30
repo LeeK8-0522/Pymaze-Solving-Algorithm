@@ -61,13 +61,13 @@ class Visualizer(object):
                     self.ax.text(j*self.cell_size, i*self.cell_size, "START", fontsize=7, weight="bold")
                 elif self.maze.initial_grid[i][j].is_entry_exit == "exit":
                     self.ax.text(j*self.cell_size, i*self.cell_size, "END", fontsize=7, weight="bold")
-                if self.maze.initial_grid[i][j].walls["top"]:
+                if self.maze.initial_grid[i][j].walls["bottom"]:
                     self.ax.plot([j*self.cell_size, (j+1)*self.cell_size],
                                  [i*self.cell_size, i*self.cell_size], color="k")
                 if self.maze.initial_grid[i][j].walls["right"]:
                     self.ax.plot([(j+1)*self.cell_size, (j+1)*self.cell_size],
                                  [i*self.cell_size, (i+1)*self.cell_size], color="k")
-                if self.maze.initial_grid[i][j].walls["bottom"]:
+                if self.maze.initial_grid[i][j].walls["top"]:
                     self.ax.plot([(j+1)*self.cell_size, j*self.cell_size],
                                  [(i+1)*self.cell_size, (i+1)*self.cell_size], color="k")
                 if self.maze.initial_grid[i][j].walls["left"]:
@@ -246,14 +246,14 @@ class Visualizer(object):
                 elif self.maze.initial_grid[i][j].is_entry_exit == "exit":
                     self.ax.text(j*self.cell_size, i*self.cell_size, "END", fontsize = 7, weight = "bold")
 
-                if self.maze.initial_grid[i][j].walls["top"]:
-                    self.lines["{},{}: top".format(i, j)] = self.ax.plot([j*self.cell_size, (j+1)*self.cell_size],
+                if self.maze.initial_grid[i][j].walls["bottom"]:
+                    self.lines["{},{}: bottom".format(i, j)] = self.ax.plot([j*self.cell_size, (j+1)*self.cell_size],
                          [i*self.cell_size, i*self.cell_size], linewidth = 2, color = color_walls)[0]
                 if self.maze.initial_grid[i][j].walls["right"]:
                     self.lines["{},{}: right".format(i, j)] = self.ax.plot([(j+1)*self.cell_size, (j+1)*self.cell_size],
                          [i*self.cell_size, (i+1)*self.cell_size], linewidth = 2, color = color_walls)[0]
-                if self.maze.initial_grid[i][j].walls["bottom"]:
-                    self.lines["{},{}: bottom".format(i, j)] = self.ax.plot([(j+1)*self.cell_size, j*self.cell_size],
+                if self.maze.initial_grid[i][j].walls["top"]:
+                    self.lines["{},{}: top".format(i, j)] = self.ax.plot([(j+1)*self.cell_size, j*self.cell_size],
                          [(i+1)*self.cell_size, (i+1)*self.cell_size], linewidth = 2, color = color_walls)[0]
                 if self.maze.initial_grid[i][j].walls["left"]:
                     self.lines["{},{}: left".format(i, j)] = self.ax.plot([j*self.cell_size, j*self.cell_size],

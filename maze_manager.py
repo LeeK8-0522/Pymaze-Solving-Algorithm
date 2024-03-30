@@ -188,12 +188,11 @@ class MazeManager(object):
         self.quiet_mode=enabled
 
 def manhattan_distance(coord1, coord2):  # 두 좌표 사이의 맨허튼 거리를 계산 (수평은 0.9, 수직은 1.1 penalty)
-     return 0.9 * abs(coord1[0] - coord2[0]) + 1.1 * abs(coord1[1] - coord2[1])
+     return 1.1 * abs(coord1[0] - coord2[0]) + 0.9 * abs(coord1[1] - coord2[1])
 
 def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 최적해 구하기
     start = maze.entry_coor
     goal = maze.exit_coor
-    maze.grid[start[0]][start[1]].visited = True  # start 노드 방문 표시
     priority_queue = []  # 우선순위 큐 선언 (for f의 최솟값 찾기)
     heapq.heappush(priority_queue, (0 + heuristic_function(start, goal), start))  # (f, coord) 튜플 형태로 우선순위에 저장
     parent = {}  # 최적 해 경로 역추적용. 딕셔너리 자료형을 이용하여 '[a] -> b' 형태로 저장.
@@ -210,6 +209,8 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
 
     while len(priority_queue) != 0:
         f_curr, curr = heapq.heappop(priority_queue)  # 우선순위 큐에서 pop
+        if(maze.grid[curr[0]][curr[1]].visited) :
+            continue
         maze.grid[curr[0]][curr[1]].visited = True  # 방문 표시
         visited_cells.append(curr)  # 방문 기록에 추가
 
@@ -250,7 +251,6 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
 def uniform_cost_search(maze):  # ucs 알고리즘으로 최적해 구하기
     start = maze.entry_coor
     goal = maze.exit_coor
-    maze.grid[start[0]][start[1]].visited = True  # start 노드 방문 표시
     priority_queue = []  # 우선순위 큐 선언 (for f의 최솟값 찾기)
     heapq.heappush(priority_queue, (0, start))  # (g, coord) 형태로 우선순위에 저장
     parent = {}  # 경로 역추적용
@@ -267,6 +267,8 @@ def uniform_cost_search(maze):  # ucs 알고리즘으로 최적해 구하기
 
     while len(priority_queue) != 0:
         f_curr, curr = heapq.heappop(priority_queue)  # 우선순위 큐에서 pop
+        if(maze.grid[curr[0]][curr[1]].visited):
+            continue
         maze.grid[curr[0]][curr[1]].visited = True  # 방문 표시
         visited_cells.append(curr)  # 방문 기록에 추가
 
