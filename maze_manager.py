@@ -132,6 +132,8 @@ class MazeManager(object):
             maze.solution_path = solver.solve()
         elif method == "A-Star":
             maze.solution_path, maze.solution_cost = a_star_search(maze, manhattan_distance)
+        elif method == "A-Star special version":  # calculate a * search algorithm with more accurate heuristic function
+            maze.solution_path, maze.solution_cost = a_star_search(maze, manhattan_distance_special_ver)
         else:
             maze.solution_path, maze.solution_cost = uniform_cost_search(maze)
 
@@ -187,8 +189,15 @@ class MazeManager(object):
         """
         self.quiet_mode=enabled
 
-def manhattan_distance(coord1, coord2):  # 두 좌표 사이의 맨허튼 거리를 계산 (수평은 0.9, 수직은 1.1 penalty)
-     return 1.1 * abs(coord1[0] - coord2[0]) + 0.9 * abs(coord1[1] - coord2[1])
+def manhattan_distance(coord1, coord2):  # 두 좌표 사이의 맨허튼 거리를 계산
+     return abs(coord1[0] - coord2[0]) + abs(coord1[1] - coord2[1])
+
+
+def manhattan_distance_special_ver(coord1, coord2):  # 실제 이동 비용을 감안한 맨허튼 거리 함수 (special version)
+    return 1.1 * abs(coord1[0] - coord2[0]) + 0.9 * abs(coord1[1] - coord2[1])
+
+def adj_distance(coord1, coord2):  # 두 인접한 노드 사이의 이동 비용을 계산 (수평은 0.9, 수직은 1.1 penalty)
+    return 1.1 * abs(coord1[0] - coord2[0]) + 0.9 * abs(coord1[1] - coord2[1])
 
 def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 최적해 구하기
     start = maze.entry_coor
@@ -240,8 +249,7 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
 
         if neighbours is not None:  # 만약, 추가적으로 탐색 가능한 셀들이 없다면 동작 무시
             for neighbour in neighbours:
-                temp_cost = cost[curr] + manhattan_distance(neighbour,
-                                                            curr)  # 주의!) 여기서 heuristic 값을 구하는 것은 아니지만 동일한 효과를 낼 수 있기에 맨허튼 거리 함수 사용
+                temp_cost = cost[curr] + adj_distance(neighbour, curr)
                 if neighbour not in cost or temp_cost < cost[neighbour]:  # 잠정적 cost가 더 작은 경우에만 연산을 수행하기에 업데이트가 안 된 old data는 자동적으로 무시됨.
                     relaxation(curr, neighbour, temp_cost)  # relaxation 연산
                     heapq.heappush(priority_queue, (temp_cost + heuristic_function(neighbour, goal), neighbour))  # 우선순위 큐에 push
@@ -298,8 +306,7 @@ def uniform_cost_search(maze):  # ucs 알고리즘으로 최적해 구하기
 
         if neighbours is not None:  # 만약, 추가적으로 탐색 가능한 셀들이 없다면 동작 무시
             for neighbour in neighbours:
-                temp_cost = cost[curr] + manhattan_distance(neighbour,
-                                                            curr)  # 주의!) 여기서 heuristic 값을 구하는 것은 아니지만 동일한 효과를 낼 수 있기에 맨허튼 거리 함수 사용
+                temp_cost = cost[curr] + adj_distance(neighbour, curr)
                 if neighbour not in cost or temp_cost < cost[neighbour]:  # 잠정적 cost가 더 작은 경우에만 연산을 수행하기에 업데이트가 안 된 old data는 자동적으로 무시됨.
                     relaxation(curr, neighbour, temp_cost)  # relaxation 연산
                     heapq.heappush(priority_queue,(temp_cost, neighbour))  # 우선순위 큐에 push
