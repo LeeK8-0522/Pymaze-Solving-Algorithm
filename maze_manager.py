@@ -219,41 +219,40 @@ def a_star_search(maze, heuristic_function):  # a * 탐색 알고리즘으로 �
 
     while len(priority_queue) != 0:  # 우선순위 큐에 남아있는 cell이 없을 때까지 (=더 이상 탐색 후보인 fringe가 없을 때까지)
         f_curr, curr = heapq.heappop(priority_queue)  # 우선순위 큐에서 pop
-        if maze.grid[curr[0]][curr[1]].visited is False:  # 방문한 적이 없는 cell이라면,
-            maze.grid[curr[0]][curr[1]].visited = True  # 방문 표시
-            visited_cells.append(curr)  # 방문 기록에 추가
+        visited_cells.append(curr)  # 방문 기록에 추가
 
-            if curr != goal:  # 아직 goal에 도착하지 않았다면,
-                neighbours = maze.find_neighbours(curr[0], curr[1])  # 현재 위치에서 이웃 찾기
-                neighbours = maze._validate_neighbours_generate(neighbours)  # 이웃 셀 필터링 1
-                if neighbours is not None:  # None 객체 참조 방지
-                    neighbours = maze.validate_neighbours_solve(neighbours, curr[0], curr[1], goal[0], goal[1], "brute-force")  # 이웃 셀 필터링 2
+        if curr != goal:  # 아직 goal에 도착하지 않았다면,
+            neighbours = maze.find_neighbours(curr[0], curr[1])  # 현재 위치에서 이웃 찾기
+            neighbours = maze._validate_neighbours_generate(neighbours)  # 이웃 셀 필터링 1
+            if neighbours is not None:  # None 객체 참조 방지
+                neighbours = maze.validate_neighbours_solve(neighbours, curr[0], curr[1], goal[0], goal[1], "brute-force")  # 이웃 셀 필터링 2
 
-                if neighbours is not None:  # 만약, 추가적으로 탐색 가능한 셀들이 없다면 동작 무시
-                    for neighbour in neighbours:
-                        temp_cost = cost[curr] + adj_distance(neighbour, curr)
-                        if neighbour not in cost or temp_cost < cost[neighbour]:  # 잠정적 cost가 더 작은 경우에만 연산을 수행하기에 업데이트가 안 된 old data는 자동적으로 무시됨.
-                            relaxation(curr, neighbour, temp_cost)  # relaxation 연산
-                            heapq.heappush(priority_queue, (temp_cost + heuristic_function(neighbour, goal), neighbour))  # 우선순위 큐에 push
+            if neighbours is not None:  # 만약, 추가적으로 탐색 가능한 셀들이 없다면 동작 무시
+                for neighbour in neighbours:
+                    temp_cost = cost[curr] + adj_distance(neighbour, curr)
+                    if neighbour not in cost or temp_cost < cost[neighbour]:  # 잠정적 cost가 더 작은 경우에만 연산을 수행하기에 업데이트가 안 된 old data는 자동적으로 무시됨.
+                        relaxation(curr, neighbour, temp_cost)  # relaxation 연산
+                        maze.grid[neighbour[0]][neighbour[1]].visited = True  # 방문 표시
+                        heapq.heappush(priority_queue, (temp_cost + heuristic_function(neighbour, goal), neighbour))  # 우선순위 큐에 push
 
-            else:  # 만약, goal에 도착했다면,
-                while curr in parent:  # 최적 해 경로 역추적
-                    maze.optimal_solution_path.append(curr)
-                    curr = parent[curr]  # 해당 노드의 부모 노드를 참조함으로써 역추적
-                maze.optimal_solution_path.append(start)
-                maze.optimal_solution_path.reverse()
+        else:  # 만약, goal에 도착했다면,
+            while curr in parent:  # 최적 해 경로 역추적
+                maze.optimal_solution_path.append(curr)
+                curr = parent[curr]  # 해당 노드의 부모 노드를 참조함으로써 역추적
+            maze.optimal_solution_path.append(start)
+            maze.optimal_solution_path.reverse()
 
-                for curr in visited_cells:  # 방문 cell들 필터링 작업.
-                    if curr in maze.optimal_solution_path:  # 방문 경로 저장
-                        maze.solution_path.append((curr, False))  # 만약 해당 셀이 최적 해에 포함되어 있다면 활성상태 False로 설정.
-                    else:
-                        maze.solution_path.append((curr, True))  # 만약 해당 셀이 최적 해에 포함되어 있지 않다면 활성상태 True로 설정.
+            for curr in visited_cells:  # 방문 cell들 필터링 작업.
+                if curr in maze.optimal_solution_path:  # 방문 경로 저장
+                    maze.solution_path.append((curr, False))  # 만약 해당 셀이 최적 해에 포함되어 있다면 활성상태 False로 설정.
+                else:
+                    maze.solution_path.append((curr, True))  # 만약 해당 셀이 최적 해에 포함되어 있지 않다면 활성상태 True로 설정.
 
-                print("optimal total cost: {:.4f}".format(cost[goal]))
-                print("Number of moves performed: {}".format(len(maze.solution_path)))
-                print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
+            print("optimal total cost: {:.4f}".format(cost[goal]))
+            print("Number of moves performed: {}".format(len(maze.solution_path)))
+            print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
 
-                return maze.optimal_solution_path, cost[goal]  # 최적 해와 비용 return
+            return maze.optimal_solution_path, cost[goal]  # 최적 해와 비용 return
 
     return None, -1  # 만약 해가 존재하지 않다면,
 
@@ -276,40 +275,40 @@ def uniform_cost_search(maze):  # ucs 알고리즘으로 최적해 구하기
 
     while len(priority_queue) != 0:  # 우선순위 큐에 남아있는 cell이 없을 때까지 (=더 이상 탐색 후보인 fringe가 없을 때까지)
         f_curr, curr = heapq.heappop(priority_queue)  # 우선순위 큐에서 pop
-        if maze.grid[curr[0]][curr[1]].visited is False:  # 아직 방문하지 않은 cell이라면,
-            maze.grid[curr[0]][curr[1]].visited = True  # 방문 표시
-            visited_cells.append(curr)  # 방문 기록에 추가
+        maze.grid[curr[0]][curr[1]].visited = True  # 방문 표시
+        visited_cells.append(curr)  # 방문 기록에 추가
 
-            if curr != goal:   # 아직 goal에 도착하지 않았다면,
-                neighbours = maze.find_neighbours(curr[0], curr[1])  # 현재 위치에서 이웃 찾기
-                neighbours = maze._validate_neighbours_generate(neighbours)  # 이웃 셀 필터링 1
-                if neighbours is not None:  # None 객체 참조 방지
-                    neighbours = maze.validate_neighbours_solve(neighbours, curr[0], curr[1], goal[0], goal[1], "brute-force")  # 이웃 셀 필터링 2
+        if curr != goal:   # 아직 goal에 도착하지 않았다면,
+            neighbours = maze.find_neighbours(curr[0], curr[1])  # 현재 위치에서 이웃 찾기
+            neighbours = maze._validate_neighbours_generate(neighbours)  # 이웃 셀 필터링 1
+            if neighbours is not None:  # None 객체 참조 방지
+                neighbours = maze.validate_neighbours_solve(neighbours, curr[0], curr[1], goal[0], goal[1], "brute-force")  # 이웃 셀 필터링 2
 
-                if neighbours is not None:  # 만약, 추가적으로 탐색 가능한 셀들이 없다면 동작 무시
-                    for neighbour in neighbours:
-                        temp_cost = cost[curr] + adj_distance(neighbour, curr)
-                        if neighbour not in cost or temp_cost < cost[neighbour]:  # 잠정적 cost가 더 작은 경우에만 연산을 수행하기에 업데이트가 안 된 old data는 자동적으로 무시됨.
-                            relaxation(curr, neighbour, temp_cost)  # relaxation 연산
-                            heapq.heappush(priority_queue,(temp_cost, neighbour))  # 우선순위 큐에 push
+            if neighbours is not None:  # 만약, 추가적으로 탐색 가능한 셀들이 없다면 동작 무시
+                for neighbour in neighbours:
+                    temp_cost = cost[curr] + adj_distance(neighbour, curr)
+                    if neighbour not in cost or temp_cost < cost[neighbour]:  # 잠정적 cost가 더 작은 경우에만 연산을 수행하기에 업데이트가 안 된 old data는 자동적으로 무시됨.
+                        relaxation(curr, neighbour, temp_cost)  # relaxation 연산
+                        maze.grid[neighbour[0]][neighbour[1]].visited = True  # 방문 표시
+                        heapq.heappush(priority_queue,(temp_cost, neighbour))  # 우선순위 큐에 push
 
-            else:  # 만약, goal에 도착했다면,
-                while curr in parent:  # 최적 해 경로 역추적
-                    maze.optimal_solution_path.append(curr)
-                    curr = parent[curr]  # 해당 노드의 부모 노드를 참조함으로써 역추적
-                maze.optimal_solution_path.append(start)
-                maze.optimal_solution_path.reverse()
+        else:  # 만약, goal에 도착했다면,
+            while curr in parent:  # 최적 해 경로 역추적
+                maze.optimal_solution_path.append(curr)
+                curr = parent[curr]  # 해당 노드의 부모 노드를 참조함으로써 역추적
+            maze.optimal_solution_path.append(start)
+            maze.optimal_solution_path.reverse()
 
-                for curr in visited_cells:  # 방문 cell들 필터링 작업.
-                    if curr in maze.optimal_solution_path:  # 방문 기록 저장
-                        path.append((curr, False))  # 만약 해당 셀이 최적 해에 포함되어 있다면 활성상태 False로 설정.
-                    else:
-                        path.append((curr, True))  # 만약 해당 셀이 최적 해에 포함되어 있지 않다면 활성상태 True로 설정.
+            for curr in visited_cells:  # 방문 cell들 필터링 작업.
+                if curr in maze.optimal_solution_path:  # 방문 기록 저장
+                    path.append((curr, False))  # 만약 해당 셀이 최적 해에 포함되어 있다면 활성상태 False로 설정.
+                else:
+                    path.append((curr, True))  # 만약 해당 셀이 최적 해에 포함되어 있지 않다면 활성상태 True로 설정.
 
-                print("optimal total cost: {:.4f}".format(cost[goal]))
-                print("Number of moves performed: {}".format(len(path)))
-                print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
+            print("optimal total cost: {:.4f}".format(cost[goal]))
+            print("Number of moves performed: {}".format(len(path)))
+            print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
 
-                return path, cost[goal]  # 최적 해와 비용 return
+            return path, cost[goal]  # 최적 해와 비용 return
 
     return None, -1  # 만약 해가 존재하지 않다면,
